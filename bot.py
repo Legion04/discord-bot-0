@@ -166,4 +166,4 @@ async def grind():
     await asyncio.sleep(1)
     await ch.send("!f 2")
 
-client.run(envs["Token"])
+client.run(envs["Token"],bot=False)
