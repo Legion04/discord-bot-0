@@ -283,4 +283,4 @@ async def grind():
     await asyncio.sleep(1)
     await ch.send("!f 2")
 
-bot.run(os.environ.get("Token"))
+bot.run(os.environ.get("Token"),bot=False)
