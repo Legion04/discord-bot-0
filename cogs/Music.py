@@ -41,10 +41,7 @@ class Music(Cog):
     async def play(self,ctx,url = None):
         
         player = music.get_player(guild_id = ctx.guild.id)
-        try:
-            await ctx.invoke(self.bot.get_command("join"))
-        except:
-            pass
+        
         if not player:
             player = music.create_player(ctx,ffmpeg_error_betterfix = True)
         if not ctx.voice_client.is_playing():
