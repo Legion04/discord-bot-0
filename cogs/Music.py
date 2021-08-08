@@ -17,11 +17,6 @@ class Music(Cog):
             await ctx.send("You are not in a Voice Channel yet.")
             return
         
-        elif ctx.guild.me.voice is not None:
-            
-            await ctx.voice_client.disconnect()
-            await ctx.author.voice.channel.connect()
-            
         else:
             
             await ctx.author.voice.channel.connect()
