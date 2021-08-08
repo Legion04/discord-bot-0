@@ -137,14 +137,14 @@ class Music(Cog):
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
         for i in self.bot.voice_clients:
-            if bfr.channel.id == i.channel.id and len(i.channel.members) == 1:
+            if bfr.channel == i.channel and len(i.channel.members) == 1:
                 await asyncio.sleep(5)
                 await i.disconnect()
 
     @Cog.listener()
     async def on_songplay(self,gid,dur):
 
-        await asyncio.sleep(dur+2)
+        await asyncio.sleep(dur+5)
         try:
             player = music.get_player(guild_id = gid)
             song = await player.resume()
