@@ -1,4 +1,0 @@
-discord.py-self==1.8.1
-discord-components==1.0.1
-asyncio==3.4.3
-psycopg2==2.9.1
