@@ -135,7 +135,7 @@ class Music(Cog):
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
         
-        if not member.id == self.bot.user.id:
+        if not user.id == self.bot.user.id:
             return
 
         elif before.channel is None:
