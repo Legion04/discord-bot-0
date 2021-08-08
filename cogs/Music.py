@@ -41,6 +41,7 @@ class Music(Cog):
     @command()
     async def play(self,ctx,url = None):
         
+        await ctx.invoke(self.bot.get_command("join"))
         player = music.get_player(guild_id = ctx.guild.id)
         
         if not player:
@@ -49,14 +50,11 @@ class Music(Cog):
             await player.queue(url,search=True)
             song = await player.play()
             await ctx.send(f"Started Playing {song.name}.")
+        elif url == None:
+            await ctx.invoke(self.bot.get_command("resume"))
         else:
             song = await player.queue(url,search=True)
             await ctx.send(f"Added {song.name} to queue.")
-    
-    @play.before_invoke
-    async def main(self,ctx):
-        
-        await ctx.invoke(self.bot.get_command("join"))
         
     @command()
     async def queue(self,ctx):
@@ -138,8 +136,8 @@ class Music(Cog):
         if not user.id == self.bot.user.id:
             return
 
-        elif before.channel is None:
-            voice = after.channel.guild.voice_client
+        elif bfr.channel is None:
+            voice = aftr.channel.guild.voice_client
             time = 0
             while True:
                 await asyncio.sleep(1)
