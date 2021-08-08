@@ -56,7 +56,7 @@ class Music(Cog):
             song = await player.queue(url,search=True)
             await ctx.send(f"Added {song.name} to queue.")
     
-    @play.before_invoke()
+    @play.before_invoke
     async def main(self,ctx):
         try:
             await ctx.invoke(self.bot.get_command("join"))
