@@ -21,6 +21,7 @@ class Music(Cog):
             
             await ctx.voice_client.disconnect()
             await ctx.author.voice.channel.connect()
+            
         else:
             
             await ctx.author.voice.channel.connect()
@@ -56,8 +57,8 @@ class Music(Cog):
     async def main(self,ctx):
         try:
             await ctx.invoke(self.bot.get_command("join"))
-        except:
-            return await ctx.send("An error occurred!")
+        except e:
+            return await ctx.send(f"An error occurred! {e}")
         
     @command()
     async def queue(self,ctx):
@@ -156,19 +157,6 @@ class Music(Cog):
             if len(i.channel.members) == 1:
                 await asyncio.sleep(5)
                 await i.disconnect()
-
-    @Cog.listener()
-    async def on_songplay(self,gid,dur):
-
-        await asyncio.sleep(dur+5)
-        try:
-            player = music.get_player(guild_id = gid)
-            song = await player.resume()
-            self.bot.dispatch("songplay",gid,song.duration)
-        except NotPlaying:
-            for i in self.bot.voice_clients:
-                if i.channel.guild.id == gid:
-                    i.disconnect()
 
 def setup(bot):
     bot.add_cog(Music(bot))
