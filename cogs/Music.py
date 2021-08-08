@@ -144,8 +144,10 @@ class Music(Cog):
                 time = time + 1
                 if voice.is_playing() and not voice.is_paused():
                     time = 0
-                if time == 120:
+                if time >= 120:
                     await voice.disconnect()
+                    time = 0
+                    break
                 if not voice.is_connected():
                     break
 
