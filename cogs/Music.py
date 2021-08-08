@@ -150,7 +150,7 @@ class Music(Cog):
                     break
 
         for i in self.bot.voice_clients:
-            if len(i.channel.members) == 1:
+            if len(i.channel.members) == 1 and i.user.id == i.channel.members[0].id:
                 await asyncio.sleep(5)
                 await i.disconnect()
 
