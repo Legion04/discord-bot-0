@@ -55,10 +55,8 @@ class Music(Cog):
     
     @play.before_invoke
     async def main(self,ctx):
-        try:
-            await ctx.invoke(self.bot.get_command("join"))
-        except e:
-            return await ctx.send(f"An error occurred! {e}")
+        
+        await ctx.invoke(self.bot.get_command("join"))
         
     @command()
     async def queue(self,ctx):
