@@ -47,7 +47,6 @@ class Music(Cog):
         if not ctx.voice_client.is_playing():
             await player.queue(url,search=True)
             song = await player.play()
-            self.bot.dispatch("songplay",ctx.guild.id,song.duration)
             await ctx.send(f"Started Playing {song.name}.")
         else:
             song = await player.queue(url,search=True)
@@ -136,8 +135,25 @@ class Music(Cog):
         
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
+        
+        if not member.id == self.bot.user.id:
+            return
+
+        elif before.channel is None:
+            voice = after.channel.guild.voice_client
+            time = 0
+            while True:
+                await asyncio.sleep(1)
+                time = time + 1
+                if voice.is_playing() and not voice.is_paused():
+                    time = 0
+                if time == 120:
+                    await voice.disconnect()
+                if not voice.is_connected():
+                    break
+
         for i in self.bot.voice_clients:
-            if bfr.channel == i.channel and len(i.channel.members) == 1:
+            if len(i.channel.members) == 1:
                 await asyncio.sleep(5)
                 await i.disconnect()
 
