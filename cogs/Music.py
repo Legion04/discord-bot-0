@@ -198,7 +198,7 @@ class Music(Cog):
                     break
                 if not voice.is_connected():
                     break
-
+'''
     @Cog.listener()
     async def on_command_error(self,ctx,error):
         
@@ -209,6 +209,6 @@ class Music(Cog):
     async def play_error(self,ctx,error):
         if isinstance(error,TypeError):
             return await ctx.send("Missing song name.")
-
+'''
 def setup(bot):
     bot.add_cog(Music(bot))
