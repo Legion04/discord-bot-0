@@ -183,7 +183,7 @@ class Music(Cog):
                 await ctx.send(f"Started Playing {song.name}.")
                 url.pop(0)
             
-            if len(url) > 1:
+            if len(url) > 0:
                 
                 for i in url:
                     
