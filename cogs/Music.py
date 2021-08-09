@@ -194,13 +194,12 @@ class Music(Cog):
         if not (user.id == self.bot.user.id):
             return
 
-        print(bfr.channel.members)
         if aftr.channel is None:
             voice = discord.utils.get(self.bot.voice_clients,guild = bfr.channel.guild)
             if bfr.channel == voice.channel and len(bfr.channel.members) == 1 and self.bot.user in bfr.channel.members:
                 if not voice.is_connected():
                     return
-                voice.disconnect()
+                await voice.disconnect()
 
 
         if bfr.channel is None:
