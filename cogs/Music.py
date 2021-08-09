@@ -118,10 +118,10 @@ class Music(Cog):
     async def remove(self,ctx,num : int):
         
         player = music.get_player(guild_id = ctx.guild.id)
-        num += 1
-        if num == 1:
+        num -= 1
+        if num == 0:
             return await ctx.invoke(self.bot.get_command("skip"))
-        elif num > 1:
+        elif num > 0:
             try:
                 song = await player.remove_from_queue(num)
                 if len(player.current_queue) == 1:
