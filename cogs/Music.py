@@ -29,7 +29,7 @@ class Music(Cog):
         
         else:
             try:
-                await ctx.author.voice.chann.connect()
+                await ctx.author.voice.channel.connect()
             except:
                 pass
 
