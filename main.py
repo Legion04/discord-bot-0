@@ -16,7 +16,7 @@ async def on_ready():
     for i in bot.voice_clients:
         if not i is None:
             try:
-                i.disconnect()
+                await i.disconnect()
             except:
                 pass
         
