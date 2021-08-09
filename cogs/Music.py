@@ -12,15 +12,21 @@ class Music(Cog):
     @command()
     async def join(self,ctx):
         
-        if ctx.author.voice is None:
+        if not ctx.voice_client is None:
             
-            await ctx.send("You are not in a Voice Channel yet.")
-            return
+            if ctx.author.voice is None:
+            
+                await ctx.send("You are not in a Voice Channel yet.")
+                return
         
-        elif ctx.guild.me.voice == ctx.author.voice:
+            elif ctx.guild.me.voice == ctx.author.voice:
             
-            return
+                pass
 
+            else:
+            
+                await ctx.author.voice.channel.connect()
+                
         else:
             
             await ctx.author.voice.channel.connect()
@@ -28,14 +34,19 @@ class Music(Cog):
     @command()
     async def leave(self,ctx):
         
-        if ctx.guild.me.voice is None:
+        if not ctx.voice_client is None:
+        
+            if not ctx.voice_client.is_connected():
             
-            await ctx.send("I\'m not in a Voice Channel yet.")
-            return
+                await ctx.voice_client.disconnect()
+                
+            else:
+                
+                await ctx.send("I\'m not in a Voice Channel yet.")
         
         else:
             
-            await ctx.voice_client.disconnect()
+            await ctx.send("I\'m not in a Voice Channel yet.")
             
     @command()
     async def play(self,ctx,url = None):
