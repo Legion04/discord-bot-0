@@ -147,11 +147,11 @@ class Music(Cog):
         vol = num/100
         await player.change_volume(vol)
         await ctx.send(f"Volume changed to {num}%")
-        
+    '''
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
         
-        if not user.id == self.bot.user.id:
+        if not (user.id == self.bot.user.id):
             return
 
         elif bfr.channel is None:
@@ -170,9 +170,9 @@ class Music(Cog):
                     break
 
         for i in self.bot.voice_clients:
-            if len(i.channel.members) == 1 and i.user.id == i.channel.members[0].id:
+            if len(i.channel.members) == 1 and self.bot.user.id == i.channel.members[0].id:
                 await asyncio.sleep(5)
-                await i.disconnect()
+                await i.disconnect()'''
 
 def setup(bot):
     bot.add_cog(Music(bot))
