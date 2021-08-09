@@ -23,13 +23,10 @@ class Music(Cog):
             
                 pass
 
-            else:
+            elif not ctx.voice_client.is_connected():
             
                 await ctx.author.voice.channel.connect()
                 
-        else:
-            
-            await ctx.author.voice.channel.connect()
 
     @command()
     async def leave(self,ctx):
