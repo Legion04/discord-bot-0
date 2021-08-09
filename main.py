@@ -1,9 +1,7 @@
 import discord,asyncio,json,os
 from discord.ext import commands, tasks
-from DiscordUtils import Music
 
 bot = commands.Bot(command_prefix="?")
-music = Music()
 
 for i in os.listdir("./cogs/"):
     
