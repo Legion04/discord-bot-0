@@ -83,17 +83,21 @@ class Music(Cog):
         embed = discord.Embed(title="Queue", description="Songs in Queue :" , color = discord.Color.random())
         msg = ""
         num = 1
+        time = 0
         for i in player.current_queue():
             dur = i.duration
             minutes = dur//60
             seconds = dur%60
+            time += dur
             msg += f"{num}. {i.name} {minutes}:{seconds}"
             msg += "\n"
             num += 1
         if len(player.current_queue()) == 0:
             msg = "None"
+        minutes = time//60
+        seconds = time%60
         embed.add_field(name=msg,value="\u200b")
-        embed.set_footer(icon_url=ctx.author.avatar_url,text=f"Requested by {ctx.message.author}")
+        embed.set_footer(icon_url=ctx.author.avatar_url,text=f"Total time - {minutes}:{seconds}")
         await ctx.send(embed=embed)
         
     @command()
@@ -120,8 +124,12 @@ class Music(Cog):
         elif num > 1:
             try:
                 song = await player.remove_from_queue(num)
-                await ctx.send(f"Removed {song.name} from queue.")
-            except:
+                if len(player.current_queue) == 1:
+                    name = song.name
+                else:
+                    name = song[0].name
+                await ctx.send(f"Removed {name} from queue.")
+            except IndexError:
                 await ctx.send("Invalid number provided. Check the number from queue command.")
 
     @command()
@@ -179,6 +187,17 @@ class Music(Cog):
                     break
                 if not voice.is_connected():
                     break
+
+    @Cog.listener()
+    async def on_command_error(self,ctx,error):
+        
+        if isinstance(error,CommandNotFound):
+            pass
+    
+    @play.error
+    async def play_error(self,ctx,error):
+        if isinstance(error,TypeError):
+            return await ctx.send("Missing song name.")
 
 def setup(bot):
     bot.add_cog(Music(bot))
