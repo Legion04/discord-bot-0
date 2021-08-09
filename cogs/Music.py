@@ -166,7 +166,7 @@ class Music(Cog):
         
         url = urls.split(",")
         for i in url:
-            await ctx.send(urls,url,i)
+            await ctx.send(f"{urls},{url},{i}")
             await ctx.invoke(self.bot.get_command("play"),uri=i)
     
     @Cog.listener()
