@@ -157,6 +157,17 @@ class Music(Cog):
         vol = num/100
         await player.change_volume(vol)
         await ctx.send(f"Volume changed to {num}%")
+        
+    
+    @command(aliases=["pq",])
+    async def playqueue(self,ctx,*urls):
+        
+        urls = str("".join(urls))
+        voice = ctx.voice_client
+        
+        url = urls.split(",")
+        for i in url:
+            await ctx.invoke(self.bot.get_command("play"),url=i)
     
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
@@ -187,17 +198,6 @@ class Music(Cog):
                     break
                 if not voice.is_connected():
                     break
-
-    @command(aliases=["pq",])
-    async def playqueue(self,ctx,*urls):
-        
-        urls = str("".join(urls))
-        voice = ctx.voice_client
-        
-        url = urls.split(",")
-        for i in url:
-            await ctx.invoke(self.bot.get_command("play"),url=i)
-    
 
     @Cog.listener()
     async def on_command_error(self,ctx,error):
