@@ -14,9 +14,10 @@ async def on_ready():
     print("The LEGEND has AWOKEN!!")
     await asyncio.sleep(15)
     for i in bot.voice_clients:
-        try:
-            i.disconnect()
-        except:
-            pass
+        if not i is None:
+            try:
+                i.disconnect()
+            except:
+                pass
         
 bot.run(os.environ.get("Token"))
