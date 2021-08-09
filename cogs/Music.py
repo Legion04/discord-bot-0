@@ -163,6 +163,7 @@ class Music(Cog):
     async def playqueue(self,ctx,*uri):
         
         urls = str(" ".join(uri))
+        
         try:
             url = urls.split(",")
         except:
@@ -187,6 +188,10 @@ class Music(Cog):
                 for i in url:
                     
                     await player.queue(url,search=True)
+                    
+            await ctx.send("Added Playlist!")
+            await ctx.invoke(self.bot.get_command("queue"))
+            
     '''
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
