@@ -17,6 +17,10 @@ class Music(Cog):
             await ctx.send("You are not in a Voice Channel yet.")
             return
         
+        elif ctx.guild.me.voice == ctx.author.voice:
+            
+            return
+
         else:
             
             await ctx.author.voice.channel.connect()
