@@ -52,19 +52,24 @@ class Music(Cog):
     async def play(self,ctx,url = None):
         
         await ctx.invoke(self.bot.get_command("join"))
+        await asyncio.sleep(3)
         player = music.get_player(guild_id = ctx.guild.id)
         
-        if not player:
-            player = music.create_player(ctx,ffmpeg_error_betterfix = True)
-        if not ctx.voice_client.is_playing():
-            await player.queue(url,search=True)
-            song = await player.play()
-            await ctx.send(f"Started Playing {song.name}.")
-        elif url == None:
-            await ctx.invoke(self.bot.get_command("resume"))
+        if not ctx.voice_client is None:
+            if not player:
+                player = music.create_player(ctx,ffmpeg_error_betterfix = True)
+            if not ctx.voice_client.is_playing():
+                await player.queue(url,search=True)
+                song = await player.play()
+                await ctx.send(f"Started Playing {song.name}.")
+            elif url == None:
+                await ctx.invoke(self.bot.get_command("resume"))
+            else:
+                song = await player.queue(url,search=True)
+                await ctx.send(f"Added {song.name} to queue.")
+                
         else:
-            song = await player.queue(url,search=True)
-            await ctx.send(f"Added {song.name} to queue.")
+            print("Not connected to voice error again ffs.")
         
     @command()
     async def queue(self,ctx):
