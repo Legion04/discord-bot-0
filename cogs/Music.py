@@ -128,7 +128,7 @@ class Music(Cog):
     async def skip(self,ctx):
         player = music.get_player(guild_id = ctx.guild.id)
         song = await player.skip(force=True)
-        await ctx.send(f"Skipped {song.name}")
+        await ctx.send(f"Skipped {song[0].name}")
     
     @command()
     async def loop(self,ctx):
@@ -149,7 +149,7 @@ class Music(Cog):
         vol = num/100
         await player.change_volume(vol)
         await ctx.send(f"Volume changed to {num}%")
-    '''
+    
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
         
@@ -170,11 +170,11 @@ class Music(Cog):
                     break
                 if not voice.is_connected():
                     break
-
-        for i in self.bot.voice_clients:
-            if len(i.channel.members) == 1 and self.bot.user.id == i.channel.members[0].id:
-                await asyncio.sleep(5)
-                await i.disconnect()'''
+        
+        if aftr.channel is None:
+            voice = discord.utils.get(self.bot.voice_clients,guild = bfr.channel.guild)
+            if bfr.channel == voice.channel and len(bfr.channel.members) == 1 and self.bot.user in bfr.channel.members:
+                voice.disconnect()
 
 def setup(bot):
     bot.add_cog(Music(bot))
