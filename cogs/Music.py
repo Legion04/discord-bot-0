@@ -59,8 +59,10 @@ class Music(Cog):
         if not ctx.voice_client is None:
             if not player:
                 player = music.create_player(ctx,ffmpeg_error_betterfix = True)
+                print("Yep")
             if not ctx.voice_client.is_playing():
                 await player.queue(url,search=True)
+                print("Ok")
                 song = await player.play()
                 await ctx.send(f"Started Playing {song.name}.")
             elif url == None:
