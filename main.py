@@ -12,5 +12,10 @@ for i in os.listdir("./cogs/"):
 @bot.event
 async def on_ready():
     print("The LEGEND has AWOKEN!!")
+    for i in self.bot.voice_clients:
+        try:
+            i.disconnect()
+        except:
+            pass
         
 bot.run(os.environ.get("Token"))
