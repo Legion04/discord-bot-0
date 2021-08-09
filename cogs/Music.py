@@ -51,20 +51,22 @@ class Music(Cog):
             await ctx.send("I\'m not in a Voice Channel yet.")
             
     @command()
-    async def play(self,ctx,url = None):
+    async def play(self,ctx,*url = None):
         
+        if not url:
+            url = "".join(url)
+            
         await ctx.invoke(self.bot.get_command("join"))
-        await asyncio.sleep(3)
         
         player = music.get_player(guild_id = ctx.guild.id)
-        print(not player)
+
         if not ctx.voice_client is None:
             if not player:
                 player = music.create_player(ctx,ffmpeg_error_betterfix = True)
-                print("Yep")
+
             if not ctx.voice_client.is_playing():
                 await player.queue(url,search=True)
-                print("Ok")
+
                 song = await player.play()
                 await ctx.send(f"Started Playing {song.name}.")
             elif url == None:
