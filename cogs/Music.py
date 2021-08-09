@@ -158,12 +158,21 @@ class Music(Cog):
         if not (user.id == self.bot.user.id):
             return
 
-        elif bfr.channel is None:
+        print(bfr.channel.members)
+        if aftr.channel is None:
+            voice = discord.utils.get(self.bot.voice_clients,guild = bfr.channel.guild)
+            if bfr.channel == voice.channel and len(bfr.channel.members) == 1 and self.bot.user in bfr.channel.members:
+                if not voice.is_connected():
+                    return
+                voice.disconnect()
+
+
+        if bfr.channel is None:
             voice = aftr.channel.guild.voice_client
             time = 0
             while True:
                 await asyncio.sleep(1)
-                time = time + 1
+                time += 1
                 if voice.is_playing() and not voice.is_paused():
                     time = 0
                 if time >= 120:
@@ -172,11 +181,6 @@ class Music(Cog):
                     break
                 if not voice.is_connected():
                     break
-        print(bfr.channel.members)
-        if aftr.channel is None:
-            voice = discord.utils.get(self.bot.voice_clients,guild = bfr.channel.guild)
-            if bfr.channel == voice.channel and len(bfr.channel.members) == 1 and self.bot.user in bfr.channel.members:
-                voice.disconnect()
 
 def setup(bot):
     bot.add_cog(Music(bot))
