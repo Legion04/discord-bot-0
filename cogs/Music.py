@@ -53,8 +53,9 @@ class Music(Cog):
         
         await ctx.invoke(self.bot.get_command("join"))
         await asyncio.sleep(3)
-        player = music.get_player(guild_id = ctx.guild.id)
         
+        player = music.get_player(guild_id = ctx.guild.id)
+        print(not player)
         if not ctx.voice_client is None:
             if not player:
                 player = music.create_player(ctx,ffmpeg_error_betterfix = True)
