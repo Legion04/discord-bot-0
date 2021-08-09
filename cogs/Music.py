@@ -160,14 +160,33 @@ class Music(Cog):
         
     
     @command(aliases=["pq",])
-    async def playqueue(self,ctx,*urls):
+    async def playqueue(self,ctx,*uri):
         
-        urls = str("".join(urls))
-        
-        url = urls.split(",")
-        for i in url:
-            await ctx.send(f"{urls},{url},{i}")
-            await ctx.invoke(self.bot.get_command("play"),uri=i)
+        urls = str(" ".join(uri))
+        try:
+            url = urls.split(",")
+        except:
+            url = uri
+
+        await ctx.invoke(self.bot.get_command("join"))
+        player = music.get_player(guild_id = ctx.guild.id)
+
+        if not ctx.voice_client is None:
+            if not player:
+                player = music.create_player(ctx,ffmpeg_error_betterfix = True)
+
+            if not ctx.voice_client.is_playing():
+                
+                await player.queue(url[0],search=True)
+                song = await player.play()
+                await ctx.send(f"Started Playing {song.name}.")
+                url.pop(0)
+            
+            if len(url) > 1:
+                
+                for i in url:
+                    
+                    await player.queue(url,search=True)
     
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
