@@ -51,9 +51,9 @@ class Music(Cog):
             await ctx.send("I\'m not in a Voice Channel yet.")
             
     @command()
-    async def play(self,ctx,*uri):
+    async def play(self,ctx,*urls):
         
-        url = str("".join(uri))
+        url = str(" ".join(urls))
             
         await ctx.invoke(self.bot.get_command("join"))
         
@@ -187,7 +187,7 @@ class Music(Cog):
                 for i in url:
                     
                     await player.queue(url,search=True)
-    
+    '''
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
         
@@ -216,7 +216,7 @@ class Music(Cog):
                     break
                 if not voice.is_connected():
                     break
-'''
+
     @Cog.listener()
     async def on_command_error(self,ctx,error):
         
