@@ -187,7 +187,7 @@ class Music(Cog):
                 
                 for i in url:
                     
-                    await player.queue(url,search=True)
+                    await player.queue(i,search=True)
                     
             await ctx.send("Added Playlist!")
             await ctx.invoke(self.bot.get_command("queue"))
