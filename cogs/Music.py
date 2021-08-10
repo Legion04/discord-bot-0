@@ -10,7 +10,7 @@ class Music(Cog):
     def __init__(self,bot):
         self.bot = bot
 
-    @command()
+    @command(aliases=["j",])
     async def join(self,ctx):
         
         if not ctx.voice_client:
@@ -32,7 +32,7 @@ class Music(Cog):
             except Exception as e:
                 print(e)
 
-    @command()
+    @command(aliases=["l",])
     async def leave(self,ctx):
         
         if not ctx.voice_client:
@@ -42,7 +42,7 @@ class Music(Cog):
         else:
             
             await ctx.voice_client.disconnect()
-            
+            """
     @command()
     async def play(self,ctx,*urls):
         
@@ -66,7 +66,40 @@ class Music(Cog):
             
         else:
             song = await player.queue(url,search=True)
-            await ctx.send(f"Added {song.name} to queue.")
+            await ctx.send(f"Added {song.name} to queue.")"""
+            
+    @command(aliases=["pl","play"])
+    async def playlist(self,ctx,*uri):
+        
+        urls = str(" ".join(uri))
+        
+        try:
+            url = urls.split(",")
+        except:
+            url = uri
+
+        await ctx.invoke(self.bot.get_command("join"))
+        player = music.get_player(guild_id = ctx.guild.id)
+
+        if not ctx.voice_client is None:
+            if not player:
+                player = music.create_player(ctx,ffmpeg_error_betterfix = True)
+
+            if not ctx.voice_client.is_playing():
+                
+                await player.queue(url[0],search=True)
+                song = await player.play()
+                await ctx.send(f"Started Playing {song.name}.")
+                url.pop(0)
+            
+            if len(url) > 0:
+                
+                for i in url:
+                    
+                    await player.queue(i,search=True)
+                    
+            await ctx.send("Added Playlist!")
+            await ctx.invoke(self.bot.get_command("queue"))
         
     @command()
     async def queue(self,ctx):
@@ -102,7 +135,7 @@ class Music(Cog):
         player = music.get_player(guild_id = ctx.guild.id)
         song = await player.resume()
         await ctx.send(f"Resumed Playing {song.name}")
-#loop,kip,resume,paise,stop
+
     @command()
     async def pause(self,ctx):
         
@@ -112,7 +145,7 @@ class Music(Cog):
         song = await player.pause()
         await ctx.send(f"Paused Playing {song.name}")
         
-    @command()
+    @command(aliases=["r",])
     async def remove(self,ctx,num : int):
         
         if not ctx.voice_client:
@@ -132,7 +165,7 @@ class Music(Cog):
             except IndexError:
                 await ctx.send("Invalid number provided. Check the number from queue command.")
 
-    @command()
+    @command(aliases=["s",])
     async def skip(self,ctx):
         
         if not ctx.voice_client:
@@ -155,7 +188,7 @@ class Music(Cog):
         else:
             await ctx.send(f"Stopped looping {song.name}.")
             
-    @command()
+    @command(aliases=["vol",])
     async def volume(self,ctx,num : int = None):
         
         if not ctx.voice_client:
@@ -180,39 +213,6 @@ class Music(Cog):
     async def kk(self,ctx):
         
         self.bot.flag = False
-        
-    @command(aliases=["pq",])
-    async def playqueue(self,ctx,*uri):
-        
-        urls = str(" ".join(uri))
-        
-        try:
-            url = urls.split(",")
-        except:
-            url = uri
-
-        await ctx.invoke(self.bot.get_command("join"))
-        player = music.get_player(guild_id = ctx.guild.id)
-
-        if not ctx.voice_client is None:
-            if not player:
-                player = music.create_player(ctx,ffmpeg_error_betterfix = True)
-
-            if not ctx.voice_client.is_playing():
-                
-                await player.queue(url[0],search=True)
-                song = await player.play()
-                await ctx.send(f"Started Playing {song.name}.")
-                url.pop(0)
-            
-            if len(url) > 0:
-                
-                for i in url:
-                    
-                    await player.queue(i,search=True)
-                    
-            await ctx.send("Added Playlist!")
-            await ctx.invoke(self.bot.get_command("queue"))
             
     @command()
     async def stop(self,ctx):
@@ -244,6 +244,7 @@ class Music(Cog):
                 
             res = await self.bot.wait_for("button_click",check=check)
             m1 = await ctx.send("Done.")
+            await asyncio.sleep(1)
             await m1.delete()
             await ctx.invoke(self.bot.get_command(res.component.custom_id))
     
@@ -279,11 +280,6 @@ class Music(Cog):
             pass
         else:
             raise(error)
-"""
-    @play.error
-    async def play_error(self,ctx,error):
-        if isinstance(error,TypeError):
-            return await ctx.send("Missing song name.")"""
 
 def setup(bot):
     bot.add_cog(Music(bot))
