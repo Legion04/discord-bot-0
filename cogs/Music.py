@@ -1,6 +1,7 @@
 import discord,asyncio,DiscordUtils
 from discord.ext import commands, tasks
 from discord.ext.commands import *
+from discord_components import *
 
 music = DiscordUtils.Music()
 
@@ -12,7 +13,7 @@ class Music(Cog):
     @command()
     async def join(self,ctx):
         
-        if not ctx.voice_client is None:
+        if not ctx.voice_client:
             
             if ctx.author.voice is None:
             
@@ -23,32 +24,24 @@ class Music(Cog):
             
                 pass
 
-            elif not ctx.voice_client.is_connected():
-            
-                await ctx.author.voice.channel.connect()
+            await ctx.author.voice.channel.connect()
         
         else:
             try:
                 await ctx.author.voice.channel.connect()
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
     @command()
     async def leave(self,ctx):
         
-        if not ctx.voice_client is None:
+        if not ctx.voice_client:
         
-            if not ctx.voice_client.is_connected():
-            
-                await ctx.voice_client.disconnect()
-                
-            else:
-                
-                await ctx.send("I\'m not in a Voice Channel yet.")
+            await ctx.send("I\'m not in a Voice Channel yet.")
         
         else:
             
-            await ctx.send("I\'m not in a Voice Channel yet.")
+            await ctx.voice_client.disconnect()
             
     @command()
     async def play(self,ctx,*urls):
@@ -57,28 +50,29 @@ class Music(Cog):
             
         await ctx.invoke(self.bot.get_command("join"))
         
+        if not ctx.voice_client:
+            return
+
         player = music.get_player(guild_id = ctx.guild.id)
 
-        if not ctx.voice_client is None:
-            if not player:
-                player = music.create_player(ctx,ffmpeg_error_betterfix = True)
+        if not player:
+            player = music.create_player(ctx,ffmpeg_error_betterfix = True)
 
-            if not ctx.voice_client.is_playing():
-                await player.queue(url,search=True)
+        if not ctx.voice_client.is_playing():
+            await player.queue(url,search=True)
 
-                song = await player.play()
-                await ctx.send(f"Started Playing {song.name}.")
-                
-            else:
-                song = await player.queue(url,search=True)
-                await ctx.send(f"Added {song.name} to queue.")
-                
+            song = await player.play()
+            await ctx.send(f"Started Playing {song.name}.")
+            
         else:
-            print("Not connected to voice error again ffs.")
+            song = await player.queue(url,search=True)
+            await ctx.send(f"Added {song.name} to queue.")
         
     @command()
     async def queue(self,ctx):
         
+        if not ctx.voice_client:
+            return
         player = music.get_player(guild_id = ctx.guild.id)
         embed = discord.Embed(title="Queue", description="Songs in Queue :" , color = discord.Color.random())
         msg = ""
@@ -103,13 +97,17 @@ class Music(Cog):
     @command()
     async def resume(self,ctx):
         
+        if not ctx.voice_client:
+            return
         player = music.get_player(guild_id = ctx.guild.id)
         song = await player.resume()
         await ctx.send(f"Resumed Playing {song.name}")
-
+#loop,kip,resume,paise,stop
     @command()
     async def pause(self,ctx):
         
+        if not ctx.voice_client:
+            return
         player = music.get_player(guild_id = ctx.guild.id)
         song = await player.pause()
         await ctx.send(f"Paused Playing {song.name}")
@@ -117,6 +115,8 @@ class Music(Cog):
     @command()
     async def remove(self,ctx,num : int):
         
+        if not ctx.voice_client:
+            return
         player = music.get_player(guild_id = ctx.guild.id)
         num -= 1
         if num == 0:
@@ -124,7 +124,7 @@ class Music(Cog):
         elif num > 0:
             try:
                 song = await player.remove_from_queue(num)
-                if len(player.current_queue) == 1:
+                if len(player.current_queue()) == 1:
                     name = song.name
                 else:
                     name = song[0].name
@@ -134,6 +134,9 @@ class Music(Cog):
 
     @command()
     async def skip(self,ctx):
+        
+        if not ctx.voice_client:
+            return
         player = music.get_player(guild_id = ctx.guild.id)
         song = await player.skip(force=True)
         await ctx.send(f"Skipped {song[0].name}")
@@ -141,6 +144,8 @@ class Music(Cog):
     @command()
     async def loop(self,ctx):
         
+        if not ctx.voice_client:
+            return
         player = music.get_player(guild_id = ctx.guild.id)
         song = await player.toggle_song_loop()
         
@@ -151,14 +156,31 @@ class Music(Cog):
             await ctx.send(f"Stopped looping {song.name}.")
             
     @command()
-    async def volume(self,ctx,num : int):
+    async def volume(self,ctx,num : int = None):
         
+        if not ctx.voice_client:
+            return
         player = music.get_player(guild_id = ctx.guild.id)
-        vol = num/100
-        await player.change_volume(vol)
-        await ctx.send(f"Volume changed to {num}%")
+        if num:
+            vol = num/100
+            await player.change_volume(vol)
+            await ctx.send(f"Volume changed to {num}%")
+        else:
+            msg = await ctx.send("> Volume :",components=[[Button(style=1,custom_id="0",label="0"),Button(style=1,custom_id="25",label="25"),Button(style=1,custom_id="50",label="50"),Button(style=1,custom_id="75",label="75"),Button(style=1,custom_id="100",label="100"),]])
+            def check(res):
+                return res.user == ctx.author and res.message.id == msg.id
+            self.bot.flag = True
+            while self.bot.flag:
+                res = await self.bot.wait_for("button_click",check = check)
+                vol = int(res.component.custom_id)
+                await player.change_volume(vol)
+                await res.respond(content="https://cdn.discordapp.com/emojis/803643669323972638.gif?v=1")
         
-    
+    @volume.before_invoke
+    async def kk(self,ctx):
+        
+        self.bot.flag = False
+        
     @command(aliases=["pq",])
     async def playqueue(self,ctx,*uri):
         
@@ -192,46 +214,74 @@ class Music(Cog):
             await ctx.send("Added Playlist!")
             await ctx.invoke(self.bot.get_command("queue"))
             
-    '''
+    @command()
+    async def stop(self,ctx):
+        
+        if ctx.voice_client is not None:
+            
+            try:
+                player = music.get_player(guild_id = ctx.guild.id)
+                await player.stop()
+                await ctx.send("Stopped!")
+            except Exception as e:
+                print(e)
+                
+    @command(aliases=["p",])
+    async def player(self,ctx):
+        
+        if not ctx.voice_client:
+            
+            return
+            
+        player = music.get_player(guild_id=ctx.guild.id)
+        msg = await ctx.send("> Player :", components=[[Button(style=1,emoji="🔁",custom_id="loop"),Button(style=1,emoji="⏸️",custom_id="pause"),Button(style=3,emoji="▶️",custom_id="resume"),Button(style=4,emoji="⏹️",custom_id="stop"),Button(style=4,emoji="⏭️",custom_id="skip")]])
+            
+        self.bot.flag = True
+        while self.bot.flag:
+            def check(res):
+                    
+                return res.user == ctx.author and res.message.id == msg.id
+                
+            res = await self.bot.wait_for("button_click",check=check)
+            m1 = await res.respond("Done.")
+            await m1.delete()
+            await ctx.invoke(self.bot.get_command(res.component.custom_id))
+    
+    @player.before_invoke
+    async def playe(self,ctx):
+        
+        self.bot.flag = False
+            
     @Cog.listener()
     async def on_voice_state_update(self,user,bfr,aftr):
         
-        if not (user.id == self.bot.user.id):
-            return
-
-        if aftr.channel is None:
-            voice = discord.utils.get(self.bot.voice_clients,guild = bfr.channel.guild)
-            if bfr.channel == voice.channel and len(bfr.channel.members) == 1 and self.bot.user in bfr.channel.members:
-                if not voice.is_connected():
-                    return
-                await voice.disconnect()
-
-
-        if bfr.channel is None:
-            voice = aftr.channel.guild.voice_client
-            time = 0
-            while True:
-                await asyncio.sleep(1)
-                time += 1
-                if voice.is_playing() and not voice.is_paused():
-                    time = 0
-                if time >= 120:
+        try:
+            if aftr.channel is None:
+                voice = discord.utils.get(self.bot.voice_clients,guild = bfr.channel.guild)
+                if bfr.channel == voice.channel and len(bfr.channel.members) == 1 and self.bot.user in bfr.channel.members:
+                    if not voice.is_connected():
+                        return
+                    try:
+                        player = music.get_player(guild_id=bfr.channel.guild.id)
+                        await player.stop()
+                    except Exception as e:
+                        print(e)
                     await voice.disconnect()
-                    time = 0
-                    break
-                if not voice.is_connected():
-                    break
 
+        except AttributeError as e:
+            
+            print(e)
+"""
     @Cog.listener()
     async def on_command_error(self,ctx,error):
         
         if isinstance(error,CommandNotFound):
             pass
-    
+
     @play.error
     async def play_error(self,ctx,error):
         if isinstance(error,TypeError):
-            return await ctx.send("Missing song name.")
-'''
+            return await ctx.send("Missing song name.")"""
+
 def setup(bot):
     bot.add_cog(Music(bot))
