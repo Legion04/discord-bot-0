@@ -3,7 +3,8 @@ from discord.ext.commands import *
 from discord_components import Button
 
 supabase = supabase_py.create_client(os.environ.get("Url"),os.environ.get("Key"))
-print(supabase)
+data = supabase.table("countries").eq("name","Belgium").select("*").execute()
+print(data)
 
 class BASICCMD(Cog):
 
