@@ -1,7 +1,11 @@
 import discord,asyncio,json,os
 from discord.ext import commands, tasks
+from DiscordUtils import Music
+from discord_components import *
 
 bot = commands.Bot(command_prefix="?")
+music = Music()
+DiscordComponents(bot)
 
 for i in os.listdir("./cogs/"):
     
@@ -12,12 +16,11 @@ for i in os.listdir("./cogs/"):
 @bot.event
 async def on_ready():
     print("The LEGEND has AWOKEN!!")
-    await asyncio.sleep(15)
+    
     for i in bot.voice_clients:
-        if not i is None:
-            try:
-                await i.disconnect()
-            except:
-                pass
+        try:
+            await i.disconnect()
+        except:
+            pass
         
 bot.run(os.environ.get("Token"))
