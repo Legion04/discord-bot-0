@@ -243,7 +243,7 @@ class Music(Cog):
                 return res.user == ctx.author and res.message.id == msg.id
                 
             res = await self.bot.wait_for("button_click",check=check)
-            m1 = await res.respond("Done.")
+            m1 = await res.respond(content="Done.")
             await m1.delete()
             await ctx.invoke(self.bot.get_command(res.component.custom_id))
     
