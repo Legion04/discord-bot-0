@@ -1,6 +1,9 @@
-import discord,json,os,asyncio
+import discord,json,os,asyncio,supabase_py
 from discord.ext.commands import *
-from discord_components import Button 
+from discord_components import Button
+
+supabase = supabase_py.create_client(os.environ.get("Url"),os.environ.get("Key"))
+print(supabase)
 
 class BASICCMD(Cog):
 
