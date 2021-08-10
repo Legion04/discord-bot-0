@@ -271,13 +271,15 @@ class Music(Cog):
         except AttributeError as e:
             
             print(e)
-"""
+
     @Cog.listener()
     async def on_command_error(self,ctx,error):
         
         if isinstance(error,CommandNotFound):
             pass
-
+        else:
+            raise(error)
+"""
     @play.error
     async def play_error(self,ctx,error):
         if isinstance(error,TypeError):
